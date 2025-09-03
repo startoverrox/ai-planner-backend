@@ -8,8 +8,8 @@ import sys
 
 from sqlalchemy.orm import Session
 
-# 현재 디렉토리를 Python 경로에 추가
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# 프로젝트 루트 디렉토리를 Python 경로에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.db.database import SessionLocal
 from app.models.documents import Document, DocumentChunk
@@ -22,7 +22,7 @@ def get_minio_files():
     print("\n1. MinIO 파일 목록 조회 중...")
     try:
         minio_files = storage_service.list_files()
-        minio_pdf_files = set(f for f in minio_files if f.endswith('.pdf'))
+        minio_pdf_files = set(f for f in minio_files if f.endswith(".pdf"))
         print(f"   MinIO에 있는 PDF 파일: {len(minio_pdf_files)}개")
         if minio_pdf_files:
             for file in minio_pdf_files:
@@ -50,9 +50,9 @@ def find_orphaned_documents(db_documents, minio_pdf_files):
 
     for doc in db_documents:
         # file_path에서 파일명 추출
-        if doc.file_path.startswith('minio://'):
+        if doc.file_path.startswith("minio://"):
             # minio://bucket_name/filename.pdf -> filename.pdf
-            file_name = doc.file_path.split('/')[-1]
+            file_name = doc.file_path.split("/")[-1]
         else:
             file_name = doc.filename
 
@@ -69,7 +69,7 @@ def confirm_cleanup(orphaned_docs):
     print(f"\n⚠️  {len(orphaned_docs)}개의 orphaned 문서를 정리하시겠습니까?")
     print("   이 작업은 되돌릴 수 없습니다.")
     confirm = input("   계속하시겠습니까? (y/N): ").lower()
-    return confirm == 'y'
+    return confirm == "y"
 
 
 def delete_single_document(db: Session, doc):
@@ -85,9 +85,11 @@ def delete_single_document(db: Session, doc):
         print(f"     ⚠️  벡터 스토어 삭제 오류: {e}")
 
     # DB에서 청크 삭제
-    chunks_deleted = db.query(DocumentChunk).filter(
-        DocumentChunk.document_id == document_id
-    ).delete()
+    chunks_deleted = (
+        db.query(DocumentChunk)
+        .filter(DocumentChunk.document_id == document_id)
+        .delete()
+    )
     print(f"     ✅ 청크 {chunks_deleted}개 삭제 완료")
 
     # 문서 삭제
@@ -132,7 +134,9 @@ def cleanup_orphaned_data():
         # 3. orphaned 문서 찾기
         orphaned_docs = find_orphaned_documents(db_documents, minio_pdf_files)
         if not orphaned_docs:
-            print("   ✅ 정리할 문서가 없습니다. DB와 MinIO가 동기화되어 있습니다.")
+            print(
+                "   ✅ 정리할 문서가 없습니다. DB와 MinIO가 동기화되어 있습니다."
+            )
             db.close()
             return True
 
@@ -163,7 +167,7 @@ def cleanup_orphaned_data():
 
     except Exception as e:
         print(f"❌ 정리 스크립트 오류: {e}")
-        if 'db' in locals():
+        if "db" in locals():
             db.rollback()
             db.close()
         return False
@@ -179,7 +183,7 @@ def show_current_status():
         # MinIO 파일 목록
         try:
             minio_files = storage_service.list_files()
-            minio_pdf_files = [f for f in minio_files if f.endswith('.pdf')]
+            minio_pdf_files = [f for f in minio_files if f.endswith(".pdf")]
             print(f"\n📁 MinIO 파일: {len(minio_pdf_files)}개")
             for file in minio_pdf_files:
                 print(f"   - {file}")
@@ -190,9 +194,11 @@ def show_current_status():
         db_documents = db.query(Document).all()
         print(f"\n🗄️  DB 문서: {len(db_documents)}개")
         for doc in db_documents:
-            chunks_count = db.query(DocumentChunk).filter(
-                DocumentChunk.document_id == doc.id
-            ).count()
+            chunks_count = (
+                db.query(DocumentChunk)
+                .filter(DocumentChunk.document_id == doc.id)
+                .count()
+            )
             print(f"   - {doc.filename} (청크: {chunks_count}개)")
 
         db.close()

@@ -4,13 +4,13 @@ RAG(Retrieval-Augmented Generation) 기반 문서 질의응답 시스템
 
 ## 🚀 주요 기능
 
-- **PDF 문서 처리**: PDF 파일을 청크 단위로 분할하여 처리
-- **MinIO Object Storage**: S3 호환 파일 저장 및 관리
-- **자동 임베딩**: 파일 업로드 시 실시간 자동 임베딩 처리
-- **자동 DB 동기화**: 파일 삭제 시 데이터베이스에서도 자동으로 관련 데이터 정리
-- **벡터 검색**: PostgreSQL + pgvector를 이용한 의미 기반 문서 검색
-- **AI 답변 생성**: Ollama를 통한 자연어 답변 생성
-- **REST API**: FastAPI 기반 RESTful API 제공
+-   **PDF 문서 처리**: PDF 파일을 청크 단위로 분할하여 처리
+-   **MinIO Object Storage**: S3 호환 파일 저장 및 관리
+-   **자동 임베딩**: 파일 업로드 시 실시간 자동 임베딩 처리
+-   **자동 DB 동기화**: 파일 삭제 시 데이터베이스에서도 자동으로 관련 데이터 정리
+-   **벡터 검색**: PostgreSQL + pgvector를 이용한 의미 기반 문서 검색
+-   **AI 답변 생성**: Ollama를 통한 자연어 답변 생성
+-   **REST API**: FastAPI 기반 RESTful API 제공
 
 ## 🏗️ 시스템 아키텍처
 
@@ -42,13 +42,13 @@ RAG(Retrieval-Augmented Generation) 기반 문서 질의응답 시스템
 1. **Docker & Docker Compose**
 2. **Ollama 설치** (호스트 시스템에)
 
-   ```bash
-   # Ollama 설치 (Linux/macOS)
-   curl -fsSL https://ollama.ai/install.sh | sh
+    ```bash
+    # Ollama 설치 (Linux/macOS)
+    curl -fsSL https://ollama.ai/install.sh | sh
 
-   # 모델 다운로드
-   ollama pull llama3.2:3b
-   ```
+    # 모델 다운로드
+    ollama pull llama3.2:3b
+    ```
 
 ## 🛠️ 설치 및 실행
 
@@ -150,9 +150,9 @@ MinIO에 PDF 파일이 업로드되면 자동으로 임베딩 처리됩니다.
 **파일 삭제 시 자동 DB 정리:**
 MinIO에서 PDF 파일이 삭제되면 데이터베이스의 관련 데이터도 자동으로 정리됩니다.
 
-- `documents` 테이블에서 해당 문서 레코드 삭제
-- `document_chunks` 테이블에서 해당 문서의 모든 청크 삭제
-- 벡터 스토어에서 해당 문서의 임베딩 데이터 삭제
+-   `documents` 테이블에서 해당 문서 레코드 삭제
+-   `document_chunks` 테이블에서 해당 문서의 모든 청크 삭제
+-   벡터 스토어에서 해당 문서의 임베딩 데이터 삭제
 
 ```bash
 # File Watcher 상태 확인
@@ -179,9 +179,9 @@ curl -X POST "http://localhost:8000/api/v1/chat" \
 
 ### API 문서 및 관리 도구
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **MinIO Console**: http://localhost:9001 (ID: minioadmin, PW: minioadmin123)
+-   **Swagger UI**: http://localhost:8000/docs
+-   **ReDoc**: http://localhost:8000/redoc
+-   **MinIO Console**: http://localhost:9001 (ID: minioadmin, PW: minioadmin123)
 
 ## 📁 프로젝트 구조
 
@@ -221,17 +221,17 @@ ai-planner-backend/
 
 ### MinIO 설정
 
-- `MINIO_ROOT_USER`: MinIO 관리자 사용자명 (기본: minioadmin)
-- `MINIO_ROOT_PASSWORD`: MinIO 관리자 비밀번호 (기본: minioadmin123)
+-   `MINIO_ROOT_USER`: MinIO 관리자 사용자명 (기본: minioadmin)
+-   `MINIO_ROOT_PASSWORD`: MinIO 관리자 비밀번호 (기본: minioadmin123)
 
 ### 청킹 설정
 
-- `CHUNK_SIZE`: 텍스트 청크 크기 (기본: 1000)
-- `CHUNK_OVERLAP`: 청크 간 겹치는 부분 (기본: 200)
+-   `CHUNK_SIZE`: 텍스트 청크 크기 (기본: 1000)
+-   `CHUNK_OVERLAP`: 청크 간 겹치는 부분 (기본: 200)
 
 ### 검색 설정
 
-- API 호출 시 `k` 파라미터로 검색할 문서 수 조절
+-   API 호출 시 `k` 파라미터로 검색할 문서 수 조절
 
 ### Ollama 모델 변경
 
@@ -256,8 +256,8 @@ check_interval = 30  # 30초 간격
 
 **처리되는 이벤트:**
 
-- `s3:ObjectCreated:*`: 파일 업로드 시 자동 임베딩 처리
-- `s3:ObjectRemoved:*`: 파일 삭제 시 자동 DB 정리
+-   `s3:ObjectCreated:*`: 파일 업로드 시 자동 임베딩 처리
+-   `s3:ObjectRemoved:*`: 파일 삭제 시 자동 DB 정리
 
 ## 🐛 문제 해결
 
