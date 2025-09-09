@@ -59,13 +59,20 @@ RAG(Retrieval-Augmented Generation) 기반 문서 질의응답 시스템
 ```env
 # 데이터베이스 설정
 DATABASE_URL=postgresql+psycopg://postgres:password@localhost:5432/ai_planner
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=password
-POSTGRES_DB=ai_planner
 
 # MinIO 설정 (Object Storage)
+MINIO_ENDPOINT=localhost:9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin123
 MINIO_ROOT_USER=minioadmin
 MINIO_ROOT_PASSWORD=minioadmin123
+MINIO_BUCKET=pdf-documents
+MINIO_SECURE=false
+
+# AWS 호환 설정 (MinIO 서명 오류 해결)
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=minioadmin
+AWS_SECRET_ACCESS_KEY=minioadmin123
 
 # Ollama 설정 (호스트에 설치된 Ollama)
 OLLAMA_BASE_URL=http://host.docker.internal:11434
@@ -107,7 +114,10 @@ pip install -r requirements.txt
 # 데이터베이스 마이그레이션
 alembic upgrade head
 
-# 애플리케이션 실행
+# 애플리케이션 실행 (방법 1 - 권장)
+fastapi dev app/main.py
+
+# 애플리케이션 실행 (방법 2)
 uvicorn app.main:app --reload
 ```
 
@@ -272,6 +282,46 @@ python setup_minio_events.py
 
 # MinIO 재시작
 docker-compose restart minio
+```
+
+### MinIO SignatureDoesNotMatch 오류
+
+MinIO 직접 접속은 되지만 애플리케이션에서 서명 오류가 발생하는 경우:
+
+**1. 환경변수 추가 설정:**
+
+```env
+# .env 파일에 추가
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=minioadmin
+AWS_SECRET_ACCESS_KEY=minioadmin123
+```
+
+**2. 터미널에서 환경변수 설정 (임시):**
+
+```bash
+export AWS_REGION=us-east-1
+export AWS_ACCESS_KEY_ID=minioadmin
+export AWS_SECRET_ACCESS_KEY=minioadmin123
+```
+
+**3. MinIO 서버 재시작:**
+
+```bash
+docker-compose restart minio
+```
+
+**4. 애플리케이션 재시작:**
+
+```bash
+# 개발 모드 재시작 (방법 1 - 권장)
+fastapi dev app/main.py
+
+# 개발 모드 재시작 (방법 2)
+uvicorn app.main:app --reload
+
+# 또는 Docker 재시작
+docker-compose restart app
 ```
 
 ### SSL 연결 오류

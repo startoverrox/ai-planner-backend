@@ -18,13 +18,21 @@ settings = get_settings()
 class StorageService:
     def __init__(self):
         # MinIO 클라이언트 초기화
-        minio_endpoint = os.getenv("MINIO_ENDPOINT", "localhost:9000")
-        minio_access_key = os.getenv("MINIO_ACCESS_KEY", "minioadmin")
-        minio_secret_key = os.getenv("MINIO_SECRET_KEY", "minioadmin")
-        self.bucket_name = os.getenv("MINIO_BUCKET", "pdf-documents")
+        minio_endpoint = settings.minio_endpoint
+        minio_access_key = settings.minio_access_key
+        minio_secret_key = settings.minio_secret_key
+        self.bucket_name = settings.minio_bucket
 
         # HTTPS 사용 여부 결정 (개발 환경에서는 HTTP 사용)
-        secure = os.getenv("MINIO_SECURE", "false").lower() == "true"
+        secure = settings.minio_secure
+
+        # AWS 호환 환경변수 설정 (서명 오류 해결)
+        if not settings.aws_region:
+            os.environ["AWS_REGION"] = "us-east-1"
+        if not settings.aws_access_key_id:
+            os.environ["AWS_ACCESS_KEY_ID"] = minio_access_key
+        if not settings.aws_secret_access_key:
+            os.environ["AWS_SECRET_ACCESS_KEY"] = minio_secret_key
 
         self.client = Minio(
             minio_endpoint,
